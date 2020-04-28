@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flight_reservation_app/model/ticket_data.dart';
+import 'package:flutter_flight_reservation_app/model/user_data.dart';
 import 'package:getflutter/components/avatar/gf_avatar.dart';
 import 'package:getflutter/shape/gf_avatar_shape.dart';
+import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
@@ -44,8 +47,9 @@ class CustomAppBar extends StatelessWidget {
                     bottom: 15.0,
                     left: -25.0,
                     child: GFAvatar(
+                        backgroundColor: Colors.grey,
                         radius: 30.0,
-                        backgroundImage: AssetImage('images/white.jpg'),
+                        backgroundImage: Provider.of<UserData>(context).image,
                         shape: GFAvatarShape.standard),
                   ),
                 ],

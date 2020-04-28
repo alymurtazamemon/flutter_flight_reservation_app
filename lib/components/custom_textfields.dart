@@ -4,15 +4,16 @@ import 'custom_horizontal_divider.dart';
 import 'custom_vertical_divider.dart';
 
 class CustomTextFields extends StatelessWidget {
-  CustomTextFields({
-    @required this.icon,
-    @required this.title,
-    this.obscureText,
-    this.hintText,
-    this.keyboardType,
-    this.onChanged,
-    this.onTap,
-  });
+  CustomTextFields(
+      {@required this.icon,
+      @required this.title,
+      this.obscureText,
+      this.hintText,
+      this.keyboardType,
+      this.onChanged,
+      this.onTap,
+      this.focusNode,
+      this.controller});
 
   final String title;
   final IconData icon;
@@ -21,6 +22,8 @@ class CustomTextFields extends StatelessWidget {
   final TextInputType keyboardType;
   final Function onChanged;
   final Function onTap;
+  final FocusNode focusNode;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +42,8 @@ class CustomTextFields extends StatelessWidget {
               SizedBox(width: 10.0),
               Flexible(
                 child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
                   keyboardType: keyboardType == null
                       ? TextInputType.visiblePassword
                       : keyboardType,

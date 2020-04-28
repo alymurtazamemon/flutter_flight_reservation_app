@@ -106,6 +106,7 @@ class BoardingPassScreen extends StatelessWidget {
                             SizedBox(height: 30.0),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,9 +124,32 @@ class BoardingPassScreen extends StatelessWidget {
                                   children: <Widget>[
                                     InactiveInfoCustomText(text: 'GATE'),
                                     InfoText(text: ticket.gateNumber),
-                                    SizedBox(height: 40.0),
-                                    InactiveInfoCustomText(text: 'SEAT'),
-                                    InfoText(text: ticket.seatNumber),
+                                    SizedBox(height: 53.0),
+                                    InactiveInfoCustomText(
+                                      text: 'SEAT',
+                                      height: 0.0,
+                                    ),
+                                    DropdownButton<String>(
+                                      icon: Icon(null),
+                                      underline: SizedBox(),
+                                      items: ticket.seats
+                                          .map((String dropDownItem) {
+                                        return DropdownMenuItem<String>(
+                                          value: dropDownItem,
+                                          child: Text(
+                                            dropDownItem,
+                                            style: TextStyle(
+                                              height: 0.0,
+                                              color: kPrimaryColor,
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (newValue) {},
+                                      value: ticket.seats[0],
+                                    )
                                   ],
                                 ),
                                 Column(
@@ -140,7 +164,7 @@ class BoardingPassScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 50.0),
+                            SizedBox(height: 30.0),
                             CustomHorizontalDivider(),
                             SizedBox(height: 30.0),
                             InfoText(text: 'Boarding pass'),

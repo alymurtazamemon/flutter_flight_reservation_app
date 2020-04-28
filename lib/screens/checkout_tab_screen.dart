@@ -23,18 +23,17 @@ class CheckoutTabScreen extends StatelessWidget {
         icon: Icons.arrow_forward_ios,
         onPressed: () {
           ticket.addGateNumber(gateNumber);
-          print(ticket.totalTickets);
           ticket.addTicket();
-          print(ticket.totalTickets);
           Navigator.pop(context);
         },
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 15.0),
+        padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 35.0),
         child: ListView(
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,10 +62,28 @@ class CheckoutTabScreen extends StatelessWidget {
                     InactiveInfoCustomText(text: 'GATE'),
                     SizedBox(height: 5.0),
                     ActiveInfoCustomText(text: gateNumber),
-                    SizedBox(height: 40.0),
-                    InactiveInfoCustomText(text: 'SEAT'),
-                    SizedBox(height: 5.0),
-                    ActiveInfoCustomText(text: ticket.seatNumber),
+                    SizedBox(height: 53.0),
+                    InactiveInfoCustomText(text: 'SEAT', height: 0.0),
+                    DropdownButton<String>(
+                      icon: Icon(null),
+                      underline: SizedBox(),
+                      dropdownColor: kPrimaryColor,
+                      items: ticket.seatsList.map((String dropDownItem) {
+                        return DropdownMenuItem<String>(
+                          value: dropDownItem,
+                          child: Text(
+                            dropDownItem,
+                            style: TextStyle(
+                              height: 0.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {},
+                      value: ticket.seatsList[0],
+                    )
                   ],
                 ),
                 Column(
@@ -89,7 +106,7 @@ class CheckoutTabScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 40.0),
+            SizedBox(height: 30.0),
             CustomHorizontalDivider(),
             SizedBox(height: 10.0),
             Row(

@@ -8,7 +8,7 @@ class Ticket {
   String time;
   String duration;
   String flightNumber;
-  String seatNumber;
+  List<String> seats;
   int price;
   String gateNumber;
 
@@ -22,7 +22,7 @@ class Ticket {
     this.time,
     this.duration,
     this.flightNumber,
-    this.seatNumber,
+    this.seats,
     this.price,
     this.gateNumber,
   });

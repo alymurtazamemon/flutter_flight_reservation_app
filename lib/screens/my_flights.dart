@@ -78,6 +78,10 @@ class Ticket extends StatelessWidget {
       children: <Widget>[
         GestureDetector(
           onTap: () {
+            print(Provider.of<TicketData>(context, listen: false)
+                .tickets[index]
+                .seats
+                .toList());
             Navigator.push(
               context,
               MaterialPageRoute(

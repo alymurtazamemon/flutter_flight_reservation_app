@@ -3,9 +3,9 @@ import 'package:flutter_flight_reservation_app/components/custom_floating_action
 import 'package:flutter_flight_reservation_app/components/custom_horizontal_divider.dart';
 import 'package:flutter_flight_reservation_app/components/custom_textfields.dart';
 import 'package:flutter_flight_reservation_app/components/custom_vertical_divider.dart';
+import 'package:flutter_flight_reservation_app/components/myAlert.dart';
 import 'package:flutter_flight_reservation_app/model/tab_controller_data.dart';
 import 'package:flutter_flight_reservation_app/model/ticket_data.dart';
-import 'package:flutter_flight_reservation_app/screens/booking_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
@@ -19,9 +19,23 @@ class _RouteTabScreenState extends State<RouteTabScreen> {
   String from;
   String to;
   String date;
+  String returnDate;
   int travelers;
   String bookingClass;
   var _bookingClassList = ['Economy', 'Business', 'First'];
+  TextEditingController _dateController;
+
+  @override
+  void initState() {
+    super.initState();
+    _dateController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _dateController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +114,10 @@ class _RouteTabScreenState extends State<RouteTabScreen> {
                                 SizedBox(height: 25.0),
                                 CustomTextFields(
                                   icon: Icons.date_range,
+                                  controller: _dateController,
                                   title: 'DATE',
                                   onTap: () {
+                                    FocusScope.of(context).unfocus();
                                     showDatePicker(
                                       context: context,
                                       initialDate: DateTime.now(),
@@ -111,7 +127,9 @@ class _RouteTabScreenState extends State<RouteTabScreen> {
                                     ).then((date) {
                                       this.date =
                                           DateFormat('MMM d').format(date);
-                                      print(this.date);
+                                      setState(() {
+                                        _dateController.text = this.date;
+                                      });
                                     });
                                   },
                                 ),
@@ -121,7 +139,8 @@ class _RouteTabScreenState extends State<RouteTabScreen> {
                                   title: 'TRAVELER',
                                   keyboardType: TextInputType.number,
                                   onChanged: (numberOfTravelers) {
-                                    travelers = numberOfTravelers;
+                                    this.travelers =
+                                        int.parse(numberOfTravelers);
                                   },
                                 ),
                                 SizedBox(height: 25.0),
@@ -179,8 +198,18 @@ class _RouteTabScreenState extends State<RouteTabScreen> {
                                 SizedBox(height: 25.0),
                               ],
                             ),
-                            Booking('Roundtrip'),
-                            Booking('Multiple'),
+                            Center(
+                              child: Text(
+                                'Roundtrip is not implemented in this app',
+                                style: TextStyle(color: kAccentColor),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                'Multiple Side is not implemented in this app',
+                                style: TextStyle(color: kAccentColor),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -196,10 +225,41 @@ class _RouteTabScreenState extends State<RouteTabScreen> {
         heroTag: 'route',
         icon: Icons.arrow_forward_ios,
         onPressed: () {
-          Provider.of<TicketData>(context, listen: false)
-              .addRouteData(from, to, date, travelers, bookingClass);
-          Provider.of<TabControllerData>(context, listen: false)
-              .incrmentIndex();
+          if (from == null ||
+              to == null ||
+              date == null ||
+              travelers == null ||
+              bookingClass == null) {
+            MyAlert.errorAlert(context,
+                desc: "One of the field is emplty. Fill all the fields");
+          } else {
+            //check if there is any seat available or not.
+            var flight = Provider.of<TicketData>(context, listen: false);
+            switch (bookingClass) {
+              case 'Economy':
+                //we have 40 seats available in each booking class.
+                if (flight.economyClassSeatsList.length == 40) {
+                  MyAlert.noSeatsAlert(context, bookingClass: bookingClass);
+                  return;
+                }
+                break;
+              case 'Business':
+                if (flight.businessClassSeatsList.length == 40) {
+                  MyAlert.noSeatsAlert(context, bookingClass: bookingClass);
+                  return;
+                }
+                break;
+              case 'First':
+                if (flight.firstClassSeatsList.length == 40) {
+                  MyAlert.noSeatsAlert(context, bookingClass: bookingClass);
+                  return;
+                }
+                break;
+            }
+            flight.addRouteData(from, to, date, travelers, bookingClass);
+            Provider.of<TabControllerData>(context, listen: false)
+                .incrmentIndex();
+          }
         },
       ),
     );

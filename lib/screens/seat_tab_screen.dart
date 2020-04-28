@@ -3,10 +3,12 @@ import 'package:flutter_flight_reservation_app/components/acronym_custom_text.da
 import 'package:flutter_flight_reservation_app/components/active_info_custom_text.dart';
 import 'package:flutter_flight_reservation_app/components/emirates_logo.dart';
 import 'package:flutter_flight_reservation_app/components/inactive_into_custom_text.dart';
+import 'package:flutter_flight_reservation_app/components/myAlert.dart';
 import 'package:flutter_flight_reservation_app/constants.dart';
 import 'package:flutter_flight_reservation_app/model/tab_controller_data.dart';
 import 'package:flutter_flight_reservation_app/model/ticket_data.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class SeatTabScreen extends StatelessWidget {
   SeatTabScreen({this.toggleTab});
@@ -90,6 +92,24 @@ class SeatTabScreen extends StatelessWidget {
 class TotalSeats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var ticket = Provider.of<TicketData>(context);
+
+    bool checkBookedTickets(String ticketNumber) {
+      switch (ticket.bookingClass) {
+        case 'Economy':
+          return ticket.economyClassSeatsList.contains(ticketNumber);
+          break;
+        case 'Business':
+          return ticket.businessClassSeatsList.contains(ticketNumber);
+          break;
+        case 'First':
+          return ticket.firstClassSeatsList.contains(ticketNumber);
+          break;
+        default:
+          return null;
+      }
+    }
+
     return Expanded(
       child: ListView.builder(
         itemBuilder: (context, index) {
@@ -97,13 +117,25 @@ class TotalSeats extends StatelessWidget {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  SeatContainer(seatNumber: '${index + 1}A'),
+                  SeatContainer(
+                    seatNumber: '${index + 1}A',
+                    isBooked: checkBookedTickets('${index + 1}A'),
+                  ),
                   SizedBox(width: 10.0),
-                  SeatContainer(seatNumber: '${index + 1}B'),
+                  SeatContainer(
+                    seatNumber: '${index + 1}B',
+                    isBooked: checkBookedTickets('${index + 1}B'),
+                  ),
                   SizedBox(width: 30.0),
-                  SeatContainer(seatNumber: '${index + 1}C'),
+                  SeatContainer(
+                    seatNumber: '${index + 1}C',
+                    isBooked: checkBookedTickets('${index + 1}C'),
+                  ),
                   SizedBox(width: 10.0),
-                  SeatContainer(seatNumber: '${index + 1}D'),
+                  SeatContainer(
+                    seatNumber: '${index + 1}D',
+                    isBooked: checkBookedTickets('${index + 1}D'),
+                  ),
                 ],
               ),
               SizedBox(height: 10),
@@ -128,32 +160,48 @@ class SeatContainer extends StatefulWidget {
 class _SeatContainerState extends State<SeatContainer> {
   bool isSelected = false;
 
+  void addticket(ticket) {
+    isSelected = !isSelected;
+    ticket.addSeat(widget.seatNumber);
+    ticket.decreaseCount();
+    if (ticket.getCount == 0)
+      Provider.of<TabControllerData>(context, listen: false).incrmentIndex();
+  }
+
   @override
   Widget build(BuildContext context) {
     var ticket = Provider.of<TicketData>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        isSelected = !isSelected;
-        ticket.addSeat(widget.seatNumber);
-        Provider.of<TabControllerData>(context, listen: false).incrmentIndex();
-        // if (ticket.seatNumber == '') {
-        //   setState(() {
-        //     isSelected = !isSelected;
-        //     ticket.addSeat(widget.seatNumber);
-        //   });
-        // } else {
-        //   if (widget.seatNumber == ticket.seatNumber) {
-        //     isSelected = !isSelected;
-        //     ticket.addSeat('');
-        //   } else {
-        //     Alert(
-        //       context: context,
-        //       type: AlertType.error,
-        //       title: "Error!",
-        //       desc: 'You have already selected a Seat',
-        //     ).show();
-        //   }
-        // }
+        switch (ticket.bookingClass) {
+          case 'Economy':
+            if (ticket.economyClassSeatsList.contains(widget.seatNumber)) {
+              MyAlert.errorAlert(context,
+                  desc: "This seat is already booked. Choose another!");
+            } else {
+              ticket.economyClassSeatsList.add(widget.seatNumber);
+              addticket(ticket);
+            }
+            break;
+          case 'Business':
+            if (ticket.businessClassSeatsList.contains(widget.seatNumber)) {
+              MyAlert.errorAlert(context,
+                  desc: "This seat is already booked. Choose another!");
+            } else {
+              ticket.businessClassSeatsList.add(widget.seatNumber);
+              addticket(ticket);
+            }
+            break;
+          case 'First':
+            if (ticket.firstClassSeatsList.contains(widget.seatNumber)) {
+              MyAlert.errorAlert(context,
+                  desc: "This seat is already booked. Choose another!");
+            } else {
+              ticket.firstClassSeatsList.add(widget.seatNumber);
+              addticket(ticket);
+            }
+            break;
+        }
       },
       child: Container(
         height: 40.0,
@@ -167,7 +215,7 @@ class _SeatContainerState extends State<SeatContainer> {
             bottomRight: Radius.circular(5.0),
           ),
           border: Border.all(
-            color: widget.isBooked != null ? kAccentColor : kLinesColor,
+            color: widget.isBooked ? kAccentColor : kLinesColor,
           ),
         ),
       ),

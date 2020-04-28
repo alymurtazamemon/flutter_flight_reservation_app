@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'ticket.dart';
 
@@ -17,6 +18,12 @@ class TicketData extends ChangeNotifier {
   int price;
   String gateNumber;
 
+  //10B is add to default ticket
+  List<String> economyClassSeatsList = ['10B'];
+  List<String> firstClassSeatsList = [];
+  List<String> businessClassSeatsList = [];
+  List<String> seatsList = [];
+
   List<Ticket> _tickets = [
     Ticket(
       from: 'Karachi',
@@ -27,7 +34,7 @@ class TicketData extends ChangeNotifier {
       time: '9:25 PM',
       duration: '1 h 23 m',
       flightNumber: 'KH23',
-      seatNumber: '23B',
+      seats: ['10B'],
       price: 123,
       gateNumber: 'G3',
     ),
@@ -42,7 +49,7 @@ class TicketData extends ChangeNotifier {
   }
 
   void addTicket() {
-    _tickets.add(Ticket(
+    _tickets.add(new Ticket(
       from: from,
       to: to,
       date: date,
@@ -51,10 +58,11 @@ class TicketData extends ChangeNotifier {
       time: time,
       duration: duration,
       flightNumber: flightNumber,
-      seatNumber: seatNumber,
+      seats: seatsList.toList(),
       price: price,
       gateNumber: gateNumber,
     ));
+    seatNumber = '';
     notifyListeners();
   }
 
@@ -79,11 +87,21 @@ class TicketData extends ChangeNotifier {
 
   addSeat(String seatNumber) {
     this.seatNumber = seatNumber;
+    seatsList.add(seatNumber);
     notifyListeners();
   }
 
   addGateNumber(String gateNumber) {
     this.gateNumber = gateNumber;
+    notifyListeners();
+  }
+
+  int get getCount {
+    return travelers;
+  }
+
+  void decreaseCount() {
+    travelers--;
     notifyListeners();
   }
 }
